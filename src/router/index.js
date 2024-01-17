@@ -8,19 +8,41 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    path: "/login",
+    name: "login",
+    component: () => import("../views/LoginView.vue"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/RegisterView.vue"),
+  },
+  {
+    path: "/submit-request",
+    name: "submit-request",
+    component: () => import("../views/LeaveRequestView.vue"),
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  console.log("to", to);
+  console.log("from", from);
+  if (to.name === "login") {
+    next();
+  }
+
+  const token = localStorage.getItem("jwt-token");
+  console.log("token", token);
+  if (!token && to.name !== "login") {
+    console.log("token not found");
+    return router.push("/login").catch(() => {});
+  }
+  next();
 });
 
 export default router;
